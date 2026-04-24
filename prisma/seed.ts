@@ -150,7 +150,16 @@ const reservationSeeds = [
     guests: 6,
     date: new Date("2026-04-26T00:00:00.000Z"),
     time: "18:00",
-    status: ReservationStatus.PENDING,
+    status: ReservationStatus.COMPLETED,
+  },
+  {
+    customerName: "Павел Соколов",
+    phone: "+7 900 444-55-66",
+    email: "pavel@example.com",
+    guests: 3,
+    date: new Date("2026-04-27T00:00:00.000Z"),
+    time: "20:00",
+    status: ReservationStatus.CANCELED,
   },
 ];
 
@@ -214,9 +223,11 @@ async function main() {
     });
   }
 
-  await prisma.reservation.createMany({
-    data: reservationSeeds,
-  });
+  await Promise.all(
+    reservationSeeds.map((reservation) =>
+      prisma.reservation.create({ data: reservation }),
+    ),
+  );
 
   await prisma.preference.create({
     data: {

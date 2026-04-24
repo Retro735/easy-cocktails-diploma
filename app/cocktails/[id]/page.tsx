@@ -1,10 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cocktails, getCocktailById } from "@/app/_data/cocktails";
+import { prisma } from "@/lib/prisma";
+import { formatCocktailPrice, getCocktailAccent } from "../_helpers";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const cocktails = await prisma.cocktail.findMany({
+    select: {
+      id: true,
+    },
+    orderBy: {
+      id: "asc",
+    },
+  });
+
   return cocktails.map((cocktail) => ({
-    id: cocktail.id,
+    id: cocktail.id.toString(),
   }));
 }
 
@@ -14,7 +24,21 @@ export default async function CocktailDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const cocktail = getCocktailById(id);
+  const cocktailId = Number(id);
+
+  if (!Number.isSafeInteger(cocktailId) || cocktailId <= 0) {
+    notFound();
+  }
+
+  const cocktail = await prisma.cocktail.findUnique({
+    where: {
+      id: cocktailId,
+    },
+    include: {
+      category: true,
+      ingredients: true,
+    },
+  });
 
   if (!cocktail) {
     notFound();
@@ -25,7 +49,7 @@ export default async function CocktailDetailsPage({
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
         <div
           className="min-h-[360px] rounded-lg border border-white/10 shadow-2xl shadow-black/30"
-          style={{ background: cocktail.accent }}
+          style={{ background: getCocktailAccent(cocktail.id) }}
         />
 
         <div className="rounded-lg border border-white/10 bg-white/[0.06] p-6 sm:p-8">
@@ -44,7 +68,7 @@ export default async function CocktailDetailsPage({
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
             {[
-              ["Основа", cocktail.base],
+              ["Категория", cocktail.category.name],
               ["Вкус", cocktail.taste],
               ["Крепость", cocktail.strength],
             ].map(([label, value]) => (
@@ -63,10 +87,10 @@ export default async function CocktailDetailsPage({
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
               {cocktail.ingredients.map((ingredient) => (
                 <li
-                  key={ingredient}
+                  key={ingredient.id}
                   className="rounded-md bg-white/10 px-3 py-2 text-sm text-stone-200"
                 >
-                  {ingredient}
+                  {ingredient.name}
                 </li>
               ))}
             </ul>
@@ -74,7 +98,7 @@ export default async function CocktailDetailsPage({
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-2xl font-semibold text-amber-100">
-              {cocktail.price}
+              {formatCocktailPrice(cocktail.price)}
             </p>
             <Link
               href="/booking"

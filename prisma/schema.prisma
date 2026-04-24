@@ -15,8 +15,8 @@ enum UserRole {
 enum ReservationStatus {
   NEW
   CONFIRMED
-  PENDING
   CANCELED
+  COMPLETED
 }
 
 model User {
