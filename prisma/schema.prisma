@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  ADMIN
+  BARTENDER
+}
+
+enum ReservationStatus {
+  NEW
+  CONFIRMED
+  PENDING
+  CANCELED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(ADMIN)
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  cocktails Cocktail[]
+}
+
+model Cocktail {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  taste       String
+  strength    String
+  price       Int
+  imageUrl    String
+  categoryId  Int
+  category    Category     @relation(fields: [categoryId], references: [id])
+  ingredients Ingredient[] @relation("CocktailIngredients")
+  createdAt   DateTime     @default(now())
+
+  @@index([categoryId])
+}
+
+model Ingredient {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  cocktails Cocktail[] @relation("CocktailIngredients")
+}
+
+model Reservation {
+  id           Int               @id @default(autoincrement())
+  customerName String
+  phone        String
+  email        String
+  guests       Int
+  date         DateTime
+  time         String
+  status       ReservationStatus @default(NEW)
+  createdAt    DateTime          @default(now())
+}
+
+model Preference {
+  id                  Int      @id @default(autoincrement())
+  taste               String
+  strength            String
+  favoriteIngredients Json
+  dislikedIngredients Json
+  createdAt           DateTime @default(now())
+}
