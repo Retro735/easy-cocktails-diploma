@@ -1,6 +1,17 @@
 import Link from "next/link";
 
-export default function BookingSuccessPage() {
+type BookingSuccessPageProps = {
+  searchParams: Promise<{
+    id?: string | string[];
+  }>;
+};
+
+export default async function BookingSuccessPage({
+  searchParams,
+}: BookingSuccessPageProps) {
+  const { id } = await searchParams;
+  const reservationId = Array.isArray(id) ? id[0] : id;
+
   return (
     <main className="flex flex-1 items-center bg-[#130c0f]">
       <section className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-8">
@@ -12,8 +23,16 @@ export default function BookingSuccessPage() {
             Столик ждет гостей
           </h1>
           <p className="mt-5 text-lg leading-8 text-stone-300">
-            Номер тестовой брони:{" "}
-            <span className="font-semibold text-amber-100">BR-1045</span>
+            {reservationId ? (
+              <>
+                Номер брони:{" "}
+                <span className="font-semibold text-amber-100">
+                  #{reservationId}
+                </span>
+              </>
+            ) : (
+              "Заявка сохранена, администратор скоро ее обработает."
+            )}
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
