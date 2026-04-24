@@ -1,65 +1,92 @@
-import Image from "next/image";
+import Link from "next/link";
+import { SectionHeader } from "./_components/SectionHeader";
+import { cocktails } from "./_data/cocktails";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="flex-1">
+      <section className="relative overflow-hidden border-b border-white/10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(251,191,36,0.24),transparent_32%),radial-gradient(circle_at_85%_15%,rgba(16,185,129,0.18),transparent_30%),linear-gradient(135deg,#130c0f,#241116_48%,#0e1511)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
+          <div className="flex flex-col justify-center">
+            <SectionHeader
+              eyebrow="Коктейльный бар"
+              title="Авторские коктейли, быстрый подбор и бронирование столов"
+              description="Базовый каркас приложения для гостя и администратора: каталог, карточка коктейля, подбор, бронирование и первые экраны управления."
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/cocktails"
+                className="inline-flex h-12 items-center justify-center rounded-md bg-amber-300 px-5 text-sm font-semibold text-[#17100f] transition hover:bg-amber-200"
+              >
+                Открыть каталог
+              </Link>
+              <Link
+                href="/recommend"
+                className="inline-flex h-12 items-center justify-center rounded-md border border-white/15 px-5 text-sm font-semibold text-white transition hover:border-emerald-200/70 hover:bg-white/10"
+              >
+                Подобрать коктейль
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="rounded-lg border border-white/10 bg-white/[0.07] p-5 shadow-2xl shadow-black/20">
+              <div className="mb-5 flex items-center justify-between">
+                <p className="text-sm font-semibold text-amber-100">
+                  Барная карта
+                </p>
+                <p className="rounded-md bg-emerald-300/15 px-3 py-1 text-sm font-semibold text-emerald-100">
+                  сегодня
+                </p>
+              </div>
+              <div className="space-y-3">
+                {cocktails.slice(0, 3).map((cocktail) => (
+                  <Link
+                    key={cocktail.id}
+                    href={`/cocktails/${cocktail.id}`}
+                    className="grid grid-cols-[48px_1fr_auto] items-center gap-4 rounded-lg bg-black/20 p-3 transition hover:bg-black/30"
+                  >
+                    <span
+                      className="size-12 rounded-md"
+                      style={{ background: cocktail.accent }}
+                    />
+                    <span>
+                      <span className="block font-semibold text-white">
+                        {cocktail.name}
+                      </span>
+                      <span className="block text-sm text-stone-300">
+                        {cocktail.base} - {cocktail.strength}
+                      </span>
+                    </span>
+                    <span className="text-sm font-semibold text-amber-100">
+                      {cocktail.price}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                ["4", "коктейля в тестовом меню"],
+                ["3", "админ-раздела"],
+                ["10", "страниц каркаса"],
+              ].map(([value, label]) => (
+                <div
+                  key={label}
+                  className="rounded-lg border border-white/10 bg-white/[0.06] p-4"
+                >
+                  <p className="text-3xl font-semibold text-white">{value}</p>
+                  <p className="mt-2 text-sm leading-5 text-stone-300">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
