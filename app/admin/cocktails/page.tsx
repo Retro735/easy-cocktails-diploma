@@ -92,7 +92,7 @@ export default async function AdminCocktailsPage({
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             <label className="block">
               <span className="text-sm font-semibold text-stone-200">
-                name
+                Название
               </span>
               <input
                 name="name"
@@ -102,7 +102,7 @@ export default async function AdminCocktailsPage({
             </label>
             <label className="block">
               <span className="text-sm font-semibold text-stone-200">
-                taste
+                Вкус
               </span>
               <input
                 name="taste"
@@ -112,7 +112,7 @@ export default async function AdminCocktailsPage({
             </label>
             <label className="block">
               <span className="text-sm font-semibold text-stone-200">
-                strength
+                Крепость
               </span>
               <input
                 name="strength"
@@ -122,7 +122,7 @@ export default async function AdminCocktailsPage({
             </label>
             <label className="block">
               <span className="text-sm font-semibold text-stone-200">
-                price
+                Цена
               </span>
               <input
                 name="price"
@@ -134,7 +134,7 @@ export default async function AdminCocktailsPage({
             </label>
             <label className="block lg:col-span-2">
               <span className="text-sm font-semibold text-stone-200">
-                imageUrl
+                Изображение
               </span>
               <input
                 name="imageUrl"
@@ -145,7 +145,7 @@ export default async function AdminCocktailsPage({
             </label>
             <label className="block lg:col-span-2">
               <span className="text-sm font-semibold text-stone-200">
-                description
+                Описание
               </span>
               <textarea
                 name="description"
@@ -156,7 +156,7 @@ export default async function AdminCocktailsPage({
             </label>
             <label className="block">
               <span className="text-sm font-semibold text-stone-200">
-                categoryId
+                Категория
               </span>
               <select
                 name="categoryId"
@@ -176,7 +176,7 @@ export default async function AdminCocktailsPage({
             </label>
             <fieldset className="lg:col-span-2">
               <legend className="text-sm font-semibold text-stone-200">
-                ingredientIds
+                Ингредиенты
               </legend>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {ingredients.map((ingredient) => (
@@ -344,7 +344,7 @@ export default async function AdminCocktailsPage({
                             />
                             <fieldset className="lg:col-span-4">
                               <legend className="text-xs font-semibold text-stone-300">
-                                ingredientIds
+                                Ингредиенты
                               </legend>
                               <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                                 {ingredients.map((ingredient) => (
