@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import Link from "next/link";
+import { AdminLogout } from "../_components/AdminLogout";
 import { SectionHeader } from "@/app/_components/SectionHeader";
+import { requireAdminUser } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { createCocktail, deleteCocktail, updateCocktail } from "./actions";
 
@@ -24,8 +26,9 @@ function getSearchValue(value?: string | string[]) {
 export default async function AdminCocktailsPage({
   searchParams,
 }: AdminCocktailsPageProps) {
-  const [{ error, success }, cocktails, categories, ingredients] =
+  const [, { error, success }, cocktails, categories, ingredients] =
     await Promise.all([
+      requireAdminUser(),
       searchParams,
       prisma.cocktail.findMany({
         include: {
@@ -64,11 +67,14 @@ export default async function AdminCocktailsPage({
   return (
     <main className="flex-1 bg-[#130c0f]">
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <SectionHeader
-          eyebrow="Админ-панель"
-          title="Управление коктейлями"
-          description="Список коктейлей из базы данных, создание новых позиций и inline-редактирование меню."
-        />
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <SectionHeader
+            eyebrow="Админ-панель"
+            title="Управление коктейлями"
+            description="Список коктейлей из базы данных, создание новых позиций и inline-редактирование меню."
+          />
+          <AdminLogout />
+        </div>
 
         {message ? (
           <p

@@ -1,4 +1,5 @@
 import "dotenv/config";
+import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
 import { ReservationStatus, UserRole } from "../lib/generated/prisma/enums";
 
@@ -171,11 +172,13 @@ async function main() {
   await prisma.category.deleteMany();
   await prisma.user.deleteMany();
 
+  const adminPasswordHash = await bcrypt.hash("demo-password-change-me", 10);
+
   await prisma.user.create({
     data: {
       name: "Администратор бара",
       email: "admin@easybar.local",
-      password: "demo-password-change-me",
+      password: adminPasswordHash,
       role: UserRole.ADMIN,
     },
   });

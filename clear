@@ -1,0 +1,47 @@
+[33mcommit ca7eb39a964b1036e1b736fc2603f28cb501728b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 15:37:52 2026 +0300
+
+    Реализован персональный подбор коктейлей
+
+[33mcommit 51df951673671f89f1a912ec7aa99a78267748af[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 15:21:24 2026 +0300
+
+    Реализовано управление коктейлями в админ-панели
+
+[33mcommit 0b980543ca2a8d8b3ace5cc27ce8e347e1e2593e[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 02:24:47 2026 +0300
+
+    Реализовано управление бронированием в админ-панели
+
+[33mcommit 9f0107f99c0a27420e4ad4770e45e2b17d492f13[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 02:08:45 2026 +0300
+
+    Реализовано создание онлайн-бронирований
+
+[33mcommit 7577c7a2cef4a8fca085aa1f4ae8b035bf632c26[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 01:56:15 2026 +0300
+
+    Каталог коктейлей подключен к базе данных
+
+[33mcommit cc3cc1e05f7f262b88086eabc3d398a6e3a57f52[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 01:34:01 2026 +0300
+
+    Добавлены Prisma, SQLite и модели базы данных
+
+[33mcommit 94a3486eb161bc28a47d96dad2b2d360754d26c7[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 00:43:44 2026 +0300
+
+    Создан базовый каркас приложения
+
+[33mcommit b0085f74894001ee51677a8581575a0cd915c5ad[m
+Author: Vladislav <diffbro1@gmail.com>
+Date:   Sat Apr 25 00:06:06 2026 +0300
+
+    Initial commit from Create Next App

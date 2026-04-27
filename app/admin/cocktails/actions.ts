@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdminUser } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const adminCocktailsPath = "/admin/cocktails";
@@ -86,6 +87,8 @@ function redirectToCocktails(search: string): never {
 }
 
 export async function createCocktail(formData: FormData) {
+  await requireAdminUser();
+
   const values = getCocktailFormValues(formData);
 
   if (!values) {
@@ -112,6 +115,8 @@ export async function createCocktail(formData: FormData) {
 }
 
 export async function updateCocktail(formData: FormData) {
+  await requireAdminUser();
+
   const cocktailId = getPositiveInteger(formData, "cocktailId");
   const values = getCocktailFormValues(formData);
 
@@ -142,6 +147,8 @@ export async function updateCocktail(formData: FormData) {
 }
 
 export async function deleteCocktail(formData: FormData) {
+  await requireAdminUser();
+
   const cocktailId = getPositiveInteger(formData, "cocktailId");
 
   if (cocktailId === null) {

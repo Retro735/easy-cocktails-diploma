@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdminUser } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { ReservationStatus } from "@/lib/generated/prisma/enums";
 import type { ReservationStatus as ReservationStatusValue } from "@/lib/generated/prisma/enums";
@@ -12,6 +13,8 @@ function isReservationStatus(status: string): status is ReservationStatusValue {
 }
 
 export async function updateReservationStatus(formData: FormData) {
+  await requireAdminUser();
+
   const reservationId = Number(formData.get("reservationId"));
   const status = formData.get("status");
 

@@ -1,4 +1,6 @@
+import { AdminLogout } from "../_components/AdminLogout";
 import { SectionHeader } from "@/app/_components/SectionHeader";
+import { requireAdminUser } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { ReservationStatus } from "@/lib/generated/prisma/enums";
 import { updateReservationStatus } from "./actions";
@@ -21,20 +23,26 @@ function formatReservationDate(date: Date) {
 }
 
 export default async function AdminReservationsPage() {
-  const reservations = await prisma.reservation.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const [, reservations] = await Promise.all([
+    requireAdminUser(),
+    prisma.reservation.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+  ]);
 
   return (
     <main className="flex-1 bg-[#130c0f]">
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <SectionHeader
-          eyebrow="Админ-панель"
-          title="Управление бронированиями"
-          description="Список бронирований из базы данных с возможностью изменить статус заявки."
-        />
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <SectionHeader
+            eyebrow="Админ-панель"
+            title="Управление бронированиями"
+            description="Список бронирований из базы данных с возможностью изменить статус заявки."
+          />
+          <AdminLogout />
+        </div>
 
         <div className="mt-10 overflow-hidden rounded-lg border border-white/10 bg-white/[0.06]">
           <div className="overflow-x-auto">
