@@ -12,7 +12,7 @@ export default function Home() {
             <SectionHeader
               eyebrow="Коктейльный бар"
               title="Авторские коктейли, быстрый подбор и бронирование столов"
-              description="Базовый каркас приложения для гостя и администратора: каталог, карточка коктейля, подбор, бронирование и первые экраны управления."
+              description="Подберем и познакомим с любым коктейлем на ваш вкус."
             />
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -65,24 +65,6 @@ export default function Home() {
                   </Link>
                 ))}
               </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              {[
-                ["4", "коктейля в тестовом меню"],
-                ["3", "админ-раздела"],
-                ["10", "страниц каркаса"],
-              ].map(([value, label]) => (
-                <div
-                  key={label}
-                  className="rounded-lg border border-white/10 bg-white/[0.06] p-4"
-                >
-                  <p className="text-3xl font-semibold text-white">{value}</p>
-                  <p className="mt-2 text-sm leading-5 text-stone-300">
-                    {label}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </div>

@@ -24,7 +24,7 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
           <SectionHeader
             eyebrow="Онлайн-бронирование"
             title="Бронь столика в баре"
-            description="Заполните форму, и заявка на бронирование будет сохранена в базе данных."
+            description="Оставьте контакты и удобное время — мы подготовим столик и свяжемся с вами для подтверждения."
           />
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {[

@@ -20,7 +20,7 @@ export default async function CocktailsPage() {
         <SectionHeader
           eyebrow="Каталог"
           title="Коктейли бара"
-          description="Витрина напитков из локальной базы SQLite. Карточки ведут на отдельные страницы коктейлей."
+          description="Выберите напиток по вкусу, крепости и настроению — в карточке каждого коктейля есть состав и подробное описание."
         />
 
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">

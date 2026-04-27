@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getAdminSessionUser } from "@/lib/admin-auth";
 
 const mainNav = [
   { href: "/", label: "Главная" },
@@ -13,7 +14,9 @@ const adminNav = [
   { href: "/admin/reservations", label: "Брони" },
 ];
 
-export function Header() {
+export async function Header() {
+  const adminUser = await getAdminSessionUser();
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#140e11]/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -60,21 +63,24 @@ export function Header() {
             aria-label="Навигация администратора"
             className="flex flex-wrap items-center gap-2"
           >
-            {adminNav.map((item) => (
+            {adminUser ? (
+              adminNav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="whitespace-nowrap rounded-md bg-white/[0.06] px-3 py-2 text-sm font-medium text-stone-300 transition hover:bg-emerald-300/15 hover:text-emerald-100"
+                >
+                  {item.label}
+                </Link>
+              ))
+            ) : (
               <Link
-                key={item.href}
-                href={item.href}
-                className="whitespace-nowrap rounded-md bg-white/[0.06] px-3 py-2 text-sm font-medium text-stone-300 transition hover:bg-emerald-300/15 hover:text-emerald-100"
+                href="/admin/login"
+                className="whitespace-nowrap rounded-md bg-rose-300/15 px-3 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-300/25"
               >
-                {item.label}
+                Вход
               </Link>
-            ))}
-            <Link
-              href="/admin/login"
-              className="whitespace-nowrap rounded-md bg-rose-300/15 px-3 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-300/25"
-            >
-              Вход
-            </Link>
+            )}
           </nav>
         </div>
       </div>

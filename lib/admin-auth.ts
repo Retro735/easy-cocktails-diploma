@@ -7,13 +7,11 @@ import { prisma } from "@/lib/prisma";
 import { UserRole } from "@/lib/generated/prisma/enums";
 
 const adminSessionCookie = "admin_session";
-const sessionMaxAgeSeconds = 60 * 60 * 8;
 const allowedAdminRoles = new Set<string>([UserRole.ADMIN, UserRole.BARTENDER]);
 
 type AdminSessionPayload = {
   userId: number;
   role: string;
-  expiresAt: number;
 };
 
 function getSessionSecret() {
@@ -49,7 +47,6 @@ export async function createAdminSession(user: { id: number; role: string }) {
   const payload = encodePayload({
     userId: user.id,
     role: user.role,
-    expiresAt: Date.now() + sessionMaxAgeSeconds * 1000,
   });
   const session = `${payload}.${signPayload(payload)}`;
   const cookieStore = await cookies();
@@ -58,7 +55,6 @@ export async function createAdminSession(user: { id: number; role: string }) {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
-    maxAge: sessionMaxAgeSeconds,
     path: "/",
   });
 }
@@ -87,7 +83,6 @@ export async function getAdminSessionUser() {
 
     if (
       !Number.isSafeInteger(payload.userId) ||
-      payload.expiresAt < Date.now() ||
       !isAllowedAdminRole(payload.role)
     ) {
       return null;
