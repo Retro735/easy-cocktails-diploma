@@ -1,8 +1,21 @@
 import Link from "next/link";
 import { SectionHeader } from "./_components/SectionHeader";
-import { cocktails } from "./_data/cocktails";
+import { CocktailImage } from "./cocktails/_components/CocktailImage";
+import { formatCocktailPrice } from "./cocktails/_helpers";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const cocktails = await prisma.cocktail.findMany({
+    include: {
+      category: true,
+      ingredients: true,
+    },
+    orderBy: {
+      id: "asc",
+    },
+    take: 3,
+  });
+
   return (
     <main className="flex-1">
       <section className="relative overflow-hidden border-b border-white/10">
@@ -41,26 +54,30 @@ export default function Home() {
                 </p>
               </div>
               <div className="space-y-3">
-                {cocktails.slice(0, 3).map((cocktail) => (
+                {cocktails.map((cocktail) => (
                   <Link
                     key={cocktail.id}
                     href={`/cocktails/${cocktail.id}`}
                     className="grid grid-cols-[48px_1fr_auto] items-center gap-4 rounded-lg bg-black/20 p-3 transition hover:bg-black/30"
                   >
-                    <span
+                    <CocktailImage
+                      id={cocktail.id}
+                      imageUrl={cocktail.imageUrl}
+                      name={cocktail.name}
                       className="size-12 rounded-md"
-                      style={{ background: cocktail.accent }}
+                      sizes="48px"
                     />
                     <span>
                       <span className="block font-semibold text-white">
                         {cocktail.name}
                       </span>
                       <span className="block text-sm text-stone-300">
-                        {cocktail.base} - {cocktail.strength}
+                        {cocktail.ingredients[0]?.name ?? cocktail.category.name} -{" "}
+                        {cocktail.strength}
                       </span>
                     </span>
-                    <span className="text-sm font-semibold text-amber-100">
-                      {cocktail.price}
+                    <span className="whitespace-nowrap text-sm font-semibold text-amber-100">
+                      {formatCocktailPrice(cocktail.price)}
                     </span>
                   </Link>
                 ))}

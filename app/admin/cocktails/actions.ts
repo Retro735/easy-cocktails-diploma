@@ -1,11 +1,32 @@
 "use server";
 
+import { Buffer } from "node:buffer";
+import { mkdir, writeFile } from "node:fs/promises";
+import { extname, resolve } from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const adminCocktailsPath = "/admin/cocktails";
+const cocktailImagesDirectory = resolve(process.cwd(), "public", "images", "coctails");
+const cocktailImagesPublicPath = "/images/coctails";
+const maxImageSize = 5 * 1024 * 1024;
+const imageTypeExtensions = new Map([
+  ["image/jpeg", ".jpg"],
+  ["image/png", ".png"],
+  ["image/webp", ".webp"],
+  ["image/gif", ".gif"],
+  ["image/avif", ".avif"],
+]);
+const allowedImageExtensions = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".gif",
+  ".avif",
+]);
 
 type CocktailFormValues = {
   name: string;
@@ -13,7 +34,6 @@ type CocktailFormValues = {
   taste: string;
   strength: string;
   price: number;
-  imageUrl: string;
   categoryId: number;
   ingredientIds: number[];
 };
@@ -52,7 +72,6 @@ function getCocktailFormValues(formData: FormData): CocktailFormValues | null {
   const description = getRequiredValue(formData, "description");
   const taste = getRequiredValue(formData, "taste");
   const strength = getRequiredValue(formData, "strength");
-  const imageUrl = getRequiredValue(formData, "imageUrl");
   const price = getPositiveInteger(formData, "price");
   const categoryId = getPositiveInteger(formData, "categoryId");
   const ingredientIds = getIngredientIds(formData);
@@ -62,7 +81,6 @@ function getCocktailFormValues(formData: FormData): CocktailFormValues | null {
     !description ||
     !taste ||
     !strength ||
-    !imageUrl ||
     price === null ||
     categoryId === null ||
     ingredientIds.length === 0
@@ -76,14 +94,78 @@ function getCocktailFormValues(formData: FormData): CocktailFormValues | null {
     taste,
     strength,
     price,
-    imageUrl,
     categoryId,
     ingredientIds,
   };
 }
 
+function getImageFile(formData: FormData) {
+  const value = formData.get("imageFile");
+
+  if (!(value instanceof File) || value.size === 0) {
+    return null;
+  }
+
+  return value;
+}
+
+function getImageExtension(file: File) {
+  const originalExtension = extname(file.name).toLowerCase();
+
+  return (
+    imageTypeExtensions.get(file.type) ??
+    (allowedImageExtensions.has(originalExtension) ? originalExtension : null)
+  );
+}
+
+function slugifyFileName(value: string) {
+  const slug = value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "cocktail";
+}
+
+async function saveCocktailImage(formData: FormData, cocktailName: string) {
+  const imageFile = getImageFile(formData);
+
+  if (!imageFile) {
+    return null;
+  }
+
+  const extension = getImageExtension(imageFile);
+
+  if (!extension || imageFile.size > maxImageSize) {
+    redirectToCocktails("error=image");
+  }
+
+  await mkdir(cocktailImagesDirectory, { recursive: true });
+
+  const fileName = `${slugifyFileName(cocktailName)}-${Date.now()}${extension}`;
+  const filePath = resolve(cocktailImagesDirectory, fileName);
+  const publicPath = `${cocktailImagesPublicPath}/${fileName}`;
+  const buffer = Buffer.from(await imageFile.arrayBuffer());
+
+  await writeFile(filePath, buffer);
+
+  return publicPath;
+}
+
 function redirectToCocktails(search: string): never {
   redirect(`${adminCocktailsPath}?${search}`);
+}
+
+function revalidateCocktailPages(cocktailId?: number) {
+  revalidatePath(adminCocktailsPath);
+  revalidatePath("/cocktails");
+  revalidatePath("/recommend");
+
+  if (cocktailId) {
+    revalidatePath(`/cocktails/${cocktailId}`);
+  }
 }
 
 export async function createCocktail(formData: FormData) {
@@ -95,14 +177,20 @@ export async function createCocktail(formData: FormData) {
     redirectToCocktails("error=required");
   }
 
-  await prisma.cocktail.create({
+  const imageUrl = await saveCocktailImage(formData, values.name);
+
+  if (!imageUrl) {
+    redirectToCocktails("error=required");
+  }
+
+  const cocktail = await prisma.cocktail.create({
     data: {
       name: values.name,
       description: values.description,
       taste: values.taste,
       strength: values.strength,
       price: values.price,
-      imageUrl: values.imageUrl,
+      imageUrl,
       categoryId: values.categoryId,
       ingredients: {
         connect: values.ingredientIds.map((id) => ({ id })),
@@ -110,7 +198,7 @@ export async function createCocktail(formData: FormData) {
     },
   });
 
-  revalidatePath(adminCocktailsPath);
+  revalidateCocktailPages(cocktail.id);
   redirectToCocktails("success=created");
 }
 
@@ -124,6 +212,14 @@ export async function updateCocktail(formData: FormData) {
     redirectToCocktails("error=required");
   }
 
+  const currentImageUrl = getRequiredValue(formData, "currentImageUrl");
+  const uploadedImageUrl = await saveCocktailImage(formData, values.name);
+  const imageUrl = uploadedImageUrl ?? currentImageUrl;
+
+  if (!imageUrl) {
+    redirectToCocktails("error=required");
+  }
+
   await prisma.cocktail.update({
     where: {
       id: cocktailId,
@@ -134,7 +230,7 @@ export async function updateCocktail(formData: FormData) {
       taste: values.taste,
       strength: values.strength,
       price: values.price,
-      imageUrl: values.imageUrl,
+      imageUrl,
       categoryId: values.categoryId,
       ingredients: {
         set: values.ingredientIds.map((id) => ({ id })),
@@ -142,7 +238,7 @@ export async function updateCocktail(formData: FormData) {
     },
   });
 
-  revalidatePath(adminCocktailsPath);
+  revalidateCocktailPages(cocktailId);
   redirectToCocktails("success=updated");
 }
 
@@ -161,6 +257,6 @@ export async function deleteCocktail(formData: FormData) {
     },
   });
 
-  revalidatePath(adminCocktailsPath);
+  revalidateCocktailPages(cocktailId);
   redirectToCocktails("success=deleted");
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { formatCocktailPrice, getCocktailAccent } from "../_helpers";
+import { CocktailImage } from "../_components/CocktailImage";
+import { formatCocktailPrice } from "../_helpers";
 
 export async function generateStaticParams() {
   const cocktails = await prisma.cocktail.findMany({
@@ -47,9 +48,14 @@ export default async function CocktailDetailsPage({
   return (
     <main className="flex-1 bg-[#130c0f]">
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
-        <div
+        <CocktailImage
+          id={cocktail.id}
+          imageUrl={cocktail.imageUrl}
+          name={cocktail.name}
           className="min-h-[360px] rounded-lg border border-white/10 shadow-2xl shadow-black/30"
-          style={{ background: getCocktailAccent(cocktail.id) }}
+          sizes="(min-width: 1024px) 45vw, 100vw"
+          imageClassName="object-cover"
+          priority
         />
 
         <div className="rounded-lg border border-white/10 bg-white/[0.06] p-6 sm:p-8">

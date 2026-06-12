@@ -56,6 +56,8 @@ export default async function AdminCocktailsPage({
   const message =
     errorCode === "required"
       ? "Заполните обязательные поля: название, описание, вкус, крепость, цену, изображение, категорию и ингредиенты."
+      : errorCode === "image"
+        ? "Загрузите изображение в формате JPG, PNG, WebP, GIF или AVIF размером до 5 МБ."
       : successCode === "created"
         ? "Коктейль создан."
         : successCode === "updated"
@@ -143,11 +145,15 @@ export default async function AdminCocktailsPage({
                 Изображение
               </span>
               <input
-                name="imageUrl"
+                name="imageFile"
+                type="file"
+                accept="image/*"
                 required
-                placeholder="/images/cocktails/example.jpg"
-                className="mt-2 h-11 w-full rounded-md border border-white/10 bg-[#21161a] px-3 text-sm text-white outline-none placeholder:text-stone-500 focus:border-amber-200"
+                className="mt-2 block w-full cursor-pointer rounded-md border border-white/10 bg-[#21161a] text-sm text-stone-200 outline-none file:mr-4 file:h-11 file:border-0 file:bg-amber-300 file:px-4 file:text-sm file:font-semibold file:text-[#17100f] hover:file:bg-amber-200 focus:border-amber-200"
               />
+              <span className="mt-2 block text-xs text-stone-400">
+                Файл будет сохранен в public/images/coctails.
+              </span>
             </label>
             <label className="block lg:col-span-2">
               <span className="text-sm font-semibold text-stone-200">
@@ -220,7 +226,9 @@ export default async function AdminCocktailsPage({
                   <th className="px-5 py-4 font-semibold">Описание</th>
                   <th className="px-5 py-4 font-semibold">Вкус</th>
                   <th className="px-5 py-4 font-semibold">Крепость</th>
-                  <th className="px-5 py-4 font-semibold">Цена</th>
+                  <th className="whitespace-nowrap px-5 py-4 font-semibold">
+                    Цена
+                  </th>
                   <th className="px-5 py-4 font-semibold">Категория</th>
                   <th className="px-5 py-4 font-semibold">Ингредиенты</th>
                   <th className="px-5 py-4 font-semibold">Действия</th>
@@ -246,7 +254,7 @@ export default async function AdminCocktailsPage({
                         </td>
                         <td className="px-5 py-4">{cocktail.taste}</td>
                         <td className="px-5 py-4">{cocktail.strength}</td>
-                        <td className="px-5 py-4">
+                        <td className="whitespace-nowrap px-5 py-4">
                           {formatPrice(cocktail.price)}
                         </td>
                         <td className="px-5 py-4">{cocktail.category.name}</td>
@@ -298,6 +306,11 @@ export default async function AdminCocktailsPage({
                               value={cocktail.id}
                             />
                             <input
+                              type="hidden"
+                              name="currentImageUrl"
+                              value={cocktail.imageUrl}
+                            />
+                            <input
                               name="name"
                               defaultValue={cocktail.name}
                               required
@@ -323,12 +336,20 @@ export default async function AdminCocktailsPage({
                               required
                               className="h-10 rounded-md border border-white/10 bg-[#21161a] px-3 text-sm text-white outline-none focus:border-amber-200"
                             />
-                            <input
-                              name="imageUrl"
-                              defaultValue={cocktail.imageUrl}
-                              required
-                              className="h-10 rounded-md border border-white/10 bg-[#21161a] px-3 text-sm text-white outline-none focus:border-amber-200 lg:col-span-2"
-                            />
+                            <label className="lg:col-span-2">
+                              <span className="text-xs font-semibold text-stone-300">
+                                Заменить изображение
+                              </span>
+                              <input
+                                name="imageFile"
+                                type="file"
+                                accept="image/*"
+                                className="mt-2 block w-full cursor-pointer rounded-md border border-white/10 bg-[#21161a] text-xs text-stone-200 outline-none file:mr-3 file:h-10 file:border-0 file:bg-amber-300 file:px-3 file:text-xs file:font-semibold file:text-[#17100f] hover:file:bg-amber-200 focus:border-amber-200"
+                              />
+                              <span className="mt-2 block break-all text-xs text-stone-400">
+                                Сейчас: {cocktail.imageUrl}
+                              </span>
+                            </label>
                             <select
                               name="categoryId"
                               defaultValue={cocktail.categoryId}

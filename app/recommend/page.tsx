@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SectionHeader } from "@/app/_components/SectionHeader";
-import { formatCocktailPrice, getCocktailAccent } from "@/app/cocktails/_helpers";
+import { CocktailImage } from "@/app/cocktails/_components/CocktailImage";
+import { formatCocktailPrice } from "@/app/cocktails/_helpers";
 import { prisma } from "@/lib/prisma";
 
 type RecommendPageProps = {
@@ -241,9 +242,13 @@ export default async function RecommendPage({
                 href={`/cocktails/${cocktail.id}`}
                 className="grid gap-4 rounded-lg border border-white/10 bg-white/[0.06] p-4 transition hover:border-emerald-200/60 hover:bg-white/[0.09] sm:grid-cols-[132px_1fr]"
               >
-                <div
+                <CocktailImage
+                  id={cocktail.id}
+                  imageUrl={cocktail.imageUrl}
+                  name={cocktail.name}
                   className="h-32 rounded-md"
-                  style={{ background: getCocktailAccent(cocktail.id) }}
+                  sizes="132px"
+                  imageClassName="object-cover transition duration-500 hover:scale-105"
                 />
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2">
