@@ -4,20 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { CocktailImage } from "../_components/CocktailImage";
 import { formatCocktailPrice } from "../_helpers";
 
-export async function generateStaticParams() {
-  const cocktails = await prisma.cocktail.findMany({
-    select: {
-      id: true,
-    },
-    orderBy: {
-      id: "asc",
-    },
-  });
-
-  return cocktails.map((cocktail) => ({
-    id: cocktail.id.toString(),
-  }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function CocktailDetailsPage({
   params,
