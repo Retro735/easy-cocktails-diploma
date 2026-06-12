@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { CocktailImage } from "./_components/CocktailImage";
 import { formatCocktailPrice } from "./_helpers";
 
+export const dynamic = "force-dynamic";
+
 export default async function CocktailsPage() {
   const cocktails = await prisma.cocktail.findMany({
     include: {
