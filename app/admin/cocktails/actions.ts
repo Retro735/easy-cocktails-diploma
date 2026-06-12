@@ -9,8 +9,8 @@ import { requireAdminUser } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 
 const adminCocktailsPath = "/admin/cocktails";
-const cocktailImagesDirectory = resolve(process.cwd(), "public", "images", "coctails");
-const cocktailImagesPublicPath = "/images/coctails";
+const cocktailImagesDirectory = resolve(process.cwd(), "public", "images", "cocktails");
+const cocktailImagesPublicPath = "/images/cocktails";
 const maxImageSize = 5 * 1024 * 1024;
 const imageTypeExtensions = new Map([
   ["image/jpeg", ".jpg"],

@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import Image from "next/image";
 import { getCocktailAccent } from "../_helpers";
@@ -14,19 +14,53 @@ type CocktailImageProps = {
 };
 
 const publicDirectory = resolve(process.cwd(), "public");
+const cocktailImagesDirectory = resolve(publicDirectory, "images", "cocktails");
+const legacyImagesPrefix = "/images/coctails/";
+const imagesPrefix = "/images/cocktails/";
 
-function getPublicImagePath(imageUrl: string) {
-  if (!imageUrl.startsWith("/")) {
+function slugifyFileName(value: string) {
+  const slug = value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "cocktail";
+}
+
+function findImageByCocktailName(name: string) {
+  if (!existsSync(cocktailImagesDirectory)) {
     return null;
   }
 
-  const imagePath = resolve(publicDirectory, imageUrl.replace(/^\/+/, ""));
+  const slug = slugifyFileName(name);
+  const imageFile = readdirSync(cocktailImagesDirectory)
+    .filter((fileName) => fileName === `${slug}.png` || fileName.startsWith(`${slug}-`))
+    .sort()
+    .at(-1);
+
+  return imageFile ? `${imagesPrefix}${imageFile}` : null;
+}
+
+function getPublicImagePath(imageUrl: string, name: string) {
+  if (!imageUrl.startsWith("/")) {
+    return findImageByCocktailName(name);
+  }
+
+  const normalizedImageUrl = imageUrl.startsWith(legacyImagesPrefix)
+    ? imageUrl.replace(legacyImagesPrefix, imagesPrefix)
+    : imageUrl;
+  const imagePath = resolve(
+    publicDirectory,
+    normalizedImageUrl.replace(/^\/+/, ""),
+  );
 
   if (!imagePath.startsWith(publicDirectory) || !existsSync(imagePath)) {
-    return null;
+    return findImageByCocktailName(name);
   }
 
-  return imageUrl;
+  return normalizedImageUrl;
 }
 
 export function CocktailImage({
@@ -38,7 +72,7 @@ export function CocktailImage({
   imageClassName = "object-cover",
   priority = false,
 }: CocktailImageProps) {
-  const imagePath = getPublicImagePath(imageUrl);
+  const imagePath = getPublicImagePath(imageUrl, name);
 
   return (
     <div

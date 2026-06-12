@@ -1,4 +1,6 @@
 import "dotenv/config";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
 import { ReservationStatus, UserRole } from "../lib/generated/prisma/enums";
@@ -43,7 +45,7 @@ const ingredientNames = [
 
 const categoryNames = ["Легкие", "Классика", "Авторские"];
 
-const cocktailSeeds = [
+export const cocktailSeeds = [
   {
     name: "Citrus Spritz",
     description:
@@ -51,7 +53,7 @@ const cocktailSeeds = [
     taste: "цитрус, травы, легкая горечь",
     strength: "легкий",
     price: 690,
-    imageUrl: "/images/coctails/citrus-spritz.png",
+    imageUrl: "/images/cocktails/citrus-spritz.png",
     category: "Легкие",
     ingredients: ["Просекко", "Апельсиновый биттер", "Содовая", "Розмарин"],
   },
@@ -62,7 +64,7 @@ const cocktailSeeds = [
     taste: "ягоды, лимон, мягкая сладость",
     strength: "средний",
     price: 740,
-    imageUrl: "/images/coctails/berry-collins.jpg",
+    imageUrl: "/images/cocktails/berry-collins-1778769979685.png",
     category: "Авторские",
     ingredients: ["Джин", "Малина", "Лимон", "Тростниковый сироп", "Содовая"],
   },
@@ -73,7 +75,7 @@ const cocktailSeeds = [
     taste: "горечь, дым, апельсин",
     strength: "крепкий",
     price: 820,
-    imageUrl: "/images/coctails/smoky-negroni.jpg",
+    imageUrl: "/images/cocktails/smoky-negroni-1778770266164.png",
     category: "Классика",
     ingredients: ["Джин", "Красный вермут", "Апельсиновый биттер", "Апельсиновая цедра"],
   },
@@ -84,7 +86,7 @@ const cocktailSeeds = [
     taste: "мята, лайм, свежесть",
     strength: "средний",
     price: 710,
-    imageUrl: "/images/coctails/mint-fizz.jpg",
+    imageUrl: "/images/cocktails/mint-fizz-1778770437093.png",
     category: "Легкие",
     ingredients: ["Белый ром", "Лайм", "Мята", "Тростниковый сироп", "Содовая"],
   },
@@ -95,7 +97,7 @@ const cocktailSeeds = [
     taste: "лимон, травы, сладость",
     strength: "средний",
     price: 760,
-    imageUrl: "/images/coctails/rosemary-sour.jpg",
+    imageUrl: "/images/cocktails/rosemary-sour-1780871526560.png",
     category: "Авторские",
     ingredients: ["Джин", "Лимон", "Розмарин", "Тростниковый сироп"],
   },
@@ -106,7 +108,7 @@ const cocktailSeeds = [
     taste: "имбирь, лайм, пряность",
     strength: "средний",
     price: 730,
-    imageUrl: "/images/coctails/ginger-mule.jpg",
+    imageUrl: "/images/cocktails/ginger-mule-1778770996184.png",
     category: "Классика",
     ingredients: ["Белый ром", "Лайм", "Имбирь", "Содовая"],
   },
@@ -117,7 +119,7 @@ const cocktailSeeds = [
     taste: "клюква, цитрус, свежесть",
     strength: "легкий",
     price: 680,
-    imageUrl: "/images/coctails/cranberry-highball.jpg",
+    imageUrl: "/images/cocktails/cranberry-highball-1778771135290.png",
     category: "Легкие",
     ingredients: ["Джин", "Клюква", "Лимон", "Содовая"],
   },
@@ -128,7 +130,7 @@ const cocktailSeeds = [
     taste: "вермут, апельсин, мягкая горечь",
     strength: "легкий",
     price: 650,
-    imageUrl: "/images/coctails/vermouth-tonic.jpg",
+    imageUrl: "/images/cocktails/vermouth-tonic-1778771311895.png",
     category: "Легкие",
     ingredients: ["Красный вермут", "Содовая", "Апельсиновая цедра"],
   },
@@ -139,9 +141,64 @@ const cocktailSeeds = [
     taste: "малина, лайм, ром",
     strength: "средний",
     price: 790,
-    imageUrl: "/images/coctails/raspberry-rum-punch.jpg",
+    imageUrl: "/images/cocktails/raspberry-rum-punch-1780870912114.png",
     category: "Авторские",
     ingredients: ["Белый ром", "Малина", "Лайм", "Тростниковый сироп"],
+  },
+  {
+    name: "Pineapple Rum Splash",
+    description:
+      "Освежающий коктейль на белом роме с ананасовым соком и лаймом. Подходит для тех, кто любит мягкие фруктовые напитки.",
+    taste: "Сладкий, тропический, слегка кислый",
+    strength: "Средний",
+    price: 590,
+    imageUrl: "/images/cocktails/pineapple-rum-splash-1780871430793.png",
+    category: "Авторские",
+    ingredients: ["Белый ром", "Лайм", "Тростниковый сироп", "Ананасовый сок"],
+  },
+  {
+    name: "Berry Bourbon Fizz",
+    description:
+      "Бурбон сочетается с малиной, клюквой и содовой, создавая яркий ягодный вкус с легкой газированностью.",
+    taste: "Ягодный, сладко-кислый",
+    strength: "Средний",
+    price: 650,
+    imageUrl: "/images/cocktails/berry-bourbon-fizz-1780871481383.png",
+    category: "Авторские",
+    ingredients: ["Малина", "Клюква", "Содовая", "Бурбон"],
+  },
+  {
+    name: "Ginger Vodka Mule",
+    description:
+      "Коктейль на водке с имбирем, лаймом и содовой. Отличается бодрящим вкусом и легкой остротой.",
+    taste: "Пряный, свежий, кислый",
+    strength: "Средний",
+    price: 650,
+    imageUrl: "/images/cocktails/ginger-vodka-mule-1780871712722.png",
+    category: "Авторские",
+    ingredients: ["Лайм", "Содовая", "Имбирь", "Водка"],
+  },
+  {
+    name: "Citrus Gin Breeze",
+    description:
+      "Джин, грейпфрутовый сок, лимон и тоник создают свежий напиток с выраженной цитрусовой горчинкой.",
+    taste: "Цитрусовый, свежий, горьковатый",
+    strength: "Средний",
+    price: 600,
+    imageUrl: "/images/cocktails/citrus-gin-breeze-1780871866735.png",
+    category: "Авторские",
+    ingredients: ["Джин", "Лимон", "Грейпфрутовый сок", "Медовый сироп"],
+  },
+  {
+    name: "Peach Prosecco Sparkle",
+    description:
+      "Легкий игристый коктейль с просекко, персиком и медовым сиропом. Хорошо подходит для мягкого вечернего напитка.",
+    taste: "Сладкий, фруктовый, легкий",
+    strength: "Слабый",
+    price: 720,
+    imageUrl: "/images/cocktails/peach-prosecco-sparkle-1780872008463.png",
+    category: "Авторские",
+    ingredients: ["Просекко", "Лимон", "Медовый сироп", "Персик"],
   },
   {
     name: "Coconut Tequila Sunset",
@@ -150,7 +207,7 @@ const cocktailSeeds = [
     taste: "тропический, сливочный, кисло-сладкий",
     strength: "средний",
     price: 790,
-    imageUrl: "/images/coctails/coconut-tequila-sunset.jpg",
+    imageUrl: "/images/cocktails/coconut-tequila-sunset-1780872203230.png",
     category: "Авторские",
     ingredients: ["Текила", "Кокосовое молоко", "Маракуйя", "Лайм"],
   },
@@ -161,7 +218,7 @@ const cocktailSeeds = [
     taste: "свежий, травяной, слегка сладкий",
     strength: "безалкогольный",
     price: 620,
-    imageUrl: "/images/coctails/mint-cucumber-cooler.jpg",
+    imageUrl: "/images/cocktails/mint-cucumber-cooler-1780872380804.png",
     category: "Авторские",
     ingredients: ["Огурец", "Мята", "Лайм", "Содовая", "Тростниковый сироп"],
   },
@@ -172,7 +229,7 @@ const cocktailSeeds = [
     taste: "кислый, ягодный, насыщенный",
     strength: "крепкий",
     price: 820,
-    imageUrl: "/images/coctails/cranberry-whiskey-sour.jpg",
+    imageUrl: "/images/cocktails/cranberry-whiskey-sour-1780872525402.png",
     category: "Классика",
     ingredients: ["Виски", "Клюква", "Лимон", "Яичный белок", "Тростниковый сироп"],
   },
@@ -183,7 +240,7 @@ const cocktailSeeds = [
     taste: "сухой, цитрусовый, травяной",
     strength: "средний",
     price: 760,
-    imageUrl: "/images/coctails/rosemary-grapefruit-tonic.jpg",
+    imageUrl: "/images/cocktails/rosemary-grapefruit-tonic-1780872769526.png",
     category: "Авторские",
     ingredients: ["Джин", "Грейпфрутовый сок", "Розмарин", "Тоник"],
   },
@@ -194,7 +251,7 @@ const cocktailSeeds = [
     taste: "сладкий, ягодный, травяной",
     strength: "средний",
     price: 780,
-    imageUrl: "/images/coctails/strawberry-basil-smash.jpg",
+    imageUrl: "/images/cocktails/strawberry-basil-smash-1780872891995.png",
     category: "Авторские",
     ingredients: ["Водка", "Клубника", "Базилик", "Лимон", "Тростниковый сироп"],
   },
@@ -205,7 +262,7 @@ const cocktailSeeds = [
     taste: "тропический, сладко-кислый",
     strength: "средний",
     price: 790,
-    imageUrl: "/images/coctails/passion-rum-punch.jpg",
+    imageUrl: "/images/cocktails/passion-rum-punch-1780873024813.png",
     category: "Классика",
     ingredients: ["Белый ром", "Маракуйя", "Ананасовый сок", "Лайм"],
   },
@@ -216,7 +273,7 @@ const cocktailSeeds = [
     taste: "ягодный, свежий, слегка кислый",
     strength: "средний",
     price: 760,
-    imageUrl: "/images/coctails/blueberry-gin-fizz.jpg",
+    imageUrl: "/images/cocktails/blueberry-gin-fizz-1780873251543.png",
     category: "Классика",
     ingredients: ["Джин", "Голубика", "Лимон", "Содовая", "Тростниковый сироп"],
   },
@@ -227,7 +284,7 @@ const cocktailSeeds = [
     taste: "ореховый, цитрусовый, кислый",
     strength: "крепкий",
     price: 840,
-    imageUrl: "/images/coctails/almond-orange-sour.jpg",
+    imageUrl: "/images/cocktails/almond-orange-sour-1780873405469.png",
     category: "Авторские",
     ingredients: [
       "Виски",
@@ -244,7 +301,7 @@ const cocktailSeeds = [
     taste: "кофейный, сливочный, сладкий",
     strength: "средний",
     price: 780,
-    imageUrl: "/images/coctails/coffee-rum-velvet.jpg",
+    imageUrl: "/images/cocktails/coffee-rum-velvet-1780873588387.png",
     category: "Авторские",
     ingredients: ["Белый ром", "Кофейный ликер", "Кокосовое молоко"],
   },
@@ -255,7 +312,7 @@ const cocktailSeeds = [
     taste: "горьковато-сладкий, цитрусовый, легкий",
     strength: "слабый",
     price: 690,
-    imageUrl: "/images/coctails/vermouth-citrus-spritz.jpg",
+    imageUrl: "/images/cocktails/vermouth-citrus-spritz-1780873732173.png",
     category: "Классика",
     ingredients: ["Красный вермут", "Просекко", "Апельсиновая цедра", "Содовая"],
   },
@@ -387,12 +444,18 @@ async function main() {
   });
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (error) => {
-    console.error(error);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+const isDirectExecution =
+  Boolean(process.argv[1]) &&
+  import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+
+if (isDirectExecution) {
+  main()
+    .then(async () => {
+      await prisma.$disconnect();
+    })
+    .catch(async (error) => {
+      console.error(error);
+      await prisma.$disconnect();
+      process.exit(1);
+    });
+}

@@ -152,7 +152,7 @@ export default async function AdminCocktailsPage({
                 className="mt-2 block w-full cursor-pointer rounded-md border border-white/10 bg-[#21161a] text-sm text-stone-200 outline-none file:mr-4 file:h-11 file:border-0 file:bg-amber-300 file:px-4 file:text-sm file:font-semibold file:text-[#17100f] hover:file:bg-amber-200 focus:border-amber-200"
               />
               <span className="mt-2 block text-xs text-stone-400">
-                Файл будет сохранен в public/images/coctails.
+                Файл будет сохранен в public/images/cocktails.
               </span>
             </label>
             <label className="block lg:col-span-2">
