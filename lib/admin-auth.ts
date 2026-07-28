@@ -15,7 +15,13 @@ type AdminSessionPayload = {
 };
 
 function getSessionSecret() {
-  return process.env.ADMIN_SESSION_SECRET ?? "easy-cocktails-admin-dev-secret";
+  const secret = process.env.ADMIN_SESSION_SECRET;
+
+  if (!secret) {
+    throw new Error("ADMIN_SESSION_SECRET is not configured");
+  }
+
+  return secret;
 }
 
 function encodePayload(payload: AdminSessionPayload) {

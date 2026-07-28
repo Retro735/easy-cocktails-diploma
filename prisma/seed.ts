@@ -1,9 +1,8 @@
 import "dotenv/config";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
-import { ReservationStatus, UserRole } from "../lib/generated/prisma/enums";
+import { ReservationStatus } from "../lib/generated/prisma/enums";
 
 const ingredientNames = [
   "Джин",
@@ -363,27 +362,8 @@ async function main() {
   await prisma.cocktail.deleteMany();
   await prisma.ingredient.deleteMany();
   await prisma.category.deleteMany();
-  await prisma.user.deleteMany();
 
-  const adminPasswordHash = await bcrypt.hash("demo-password-change-me", 10);
-  const bartenderPasswordHash = await bcrypt.hash("bartender-password", 10);
 
-  await prisma.user.createMany({
-    data: [
-      {
-        name: "Администратор бара",
-        email: "admin@easybar.local",
-        password: adminPasswordHash,
-        role: UserRole.ADMIN,
-      },
-      {
-        name: "Бартендер",
-        email: "bartender@easybar.local",
-        password: bartenderPasswordHash,
-        role: UserRole.BARTENDER,
-      },
-    ],
-  });
 
   const categories = await Promise.all(
     categoryNames.map((name) => prisma.category.create({ data: { name } })),
